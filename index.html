@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>PCA of Songs — Interactive</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+  <h2>PCA of Songs — Hover to Explore</h2>
+  <div id="plot" style="width: 100%; height: 600px;"></div>
+
+  <script>
+    fetch("pca_interactive_data.csv")
+      .then(response => response.text())
+      .then(data => {
+        const parsed = Papa.parse(data, { header: true }).data;
+
+        const trace = {
+          x: parsed.map(d => parseFloat(d.PC1)),
+          y: parsed.map(d => parseFloat(d.PC2)),
+          text: parsed.map(d => `${d.original_trackName} — ${d.original_artistName}`),
+          mode: "markers",
+          marker: {
+            size: 8,
+            color: parsed.map(d => parseFloat(d.cluster)),
+            colorscale: "Viridis",
+            opacity: 0.7,
+            line: { width: 1, color: "#333" }
+          },
+          type: "scatter"
+        };
+
+        Plotly.newPlot("plot", [trace], {
+          title: "PCA of Songs (Interactive)",
+          xaxis: { title: "PC1: Popularity & Reach" },
+          yaxis: { title: "PC2: Mood & Activity" }
+        });
+      });
+  </script>
+</body>
+</html>
+
